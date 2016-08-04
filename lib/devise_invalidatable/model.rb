@@ -32,7 +32,6 @@ module Devise
       def purge_old_sessions
         user_sessions.order('created_at desc').offset(10).destroy_all
       end
-
     end
   end
 end
