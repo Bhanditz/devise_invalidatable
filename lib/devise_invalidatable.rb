@@ -11,6 +11,7 @@ end
 
 if defined?(ActiveRecord)
   class UserSession < ActiveRecord::Base
+    belongs_to :sessionable, polymorphic: true
     def self.deactivate(session_id)
       where(session_id: session_id).delete_all
     end
