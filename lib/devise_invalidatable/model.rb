@@ -7,7 +7,7 @@ module Devise
 
       included do
         has_many :user_sessions,
-                 class_name: 'UserSession',
+                 as: 'sessionable',
                  dependent: :destroy
       end
 
