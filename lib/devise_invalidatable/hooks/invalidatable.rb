@@ -4,22 +4,25 @@
 # a session_id key, but the session gets renewed (and the session id changes)
 # after authentication in order to avoid session fixation attacks. So it’s
 # easier to just use our own id.
-Warden::Manager.after_set_user except: :fetch do |user, warden, _|
-  UserSession.deactivate(warden.raw_session['auth_id'])
-  warden.raw_session['auth_id'] = user.activate_session(warden)
+Warden::Manager.after_set_user except: :fetch do |user, warden, options|
+  auth_id =  "#{options[:scope]}_auth_id"
+  UserSession.deactivate(warden.raw_session[auth_id])
+  warden.raw_session[auth_id] = user.activate_session(warden)
 end
 
 # After fetching a user from the session, we check that the session is marked
 # as active for that user. If it’s not we log the user out.
-Warden::Manager.after_fetch do |user, warden, _|
-  unless user.session_active?(warden.raw_session['auth_id'])
-    warden.logout
+Warden::Manager.after_fetch do |user, warden, options|
+  auth_id =  "#{options[:scope]}_auth_id"
+  unless user.session_active?(warden.raw_session[auth_id])
+    warden.logout(options[:scope])
     throw :warden, message: :unauthenticated
   end
 end
 
 # When logging out, we deactivate the current session. This ensures that the
 # session cookie can’t be reused afterwards.
-Warden::Manager.before_logout do |_, warden, _|
-  UserSession.deactivate(warden.raw_session['auth_id'])
+Warden::Manager.before_logout do |_, warden, options|
+  auth_id =  "#{options[:scope]}_auth_id"
+  UserSession.deactivate(warden.raw_session[auth_id])
 end
