@@ -14,7 +14,8 @@
 ActiveRecord::Schema.define(version: 20160509174252) do
 
   create_table "user_sessions", force: :cascade do |t|
-    t.integer  "user_id"
+    t.integer  "sessionable_id"
+    t.string   "sessionable_type"
     t.string   "session_id"
     t.string   "ip"
     t.string   "user_agent"
@@ -23,7 +24,7 @@ ActiveRecord::Schema.define(version: 20160509174252) do
   end
 
   add_index "user_sessions", ["session_id"], name: "index_user_sessions_on_session_id", unique: true
-  add_index "user_sessions", ["user_id"], name: "index_user_sessions_on_user_id"
+  add_index "user_sessions", ["sessionable_type", "sessionable_id"], name: "index_user_sessions_on_sessionable_type_and_sessionable_id"
 
   create_table "users", force: :cascade do |t|
   end
