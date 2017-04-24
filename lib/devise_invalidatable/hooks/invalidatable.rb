@@ -14,7 +14,11 @@ end
 # as active for that user. If it’s not we log the user out.
 Warden::Manager.after_fetch do |user, warden, options|
   auth_id =  "#{options[:scope]}_auth_id"
-  unless user.session_active?(warden.raw_session[auth_id])
+  user_session = user.user_sessions.find_by(session_id: warden.raw_session[auth_id])
+  if user_session.present?
+    # update activity timestamp every hour
+    user_session.touch if user_session.updated_at < 1.hour.ago
+  else
     warden.logout(options[:scope])
     throw :warden, message: :unauthenticated
   end
