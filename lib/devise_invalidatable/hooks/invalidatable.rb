@@ -7,7 +7,7 @@
 Warden::Manager.after_set_user except: :fetch do |user, warden, options|
   auth_id =  "#{options[:scope]}_auth_id"
   UserSession.deactivate(warden.raw_session[auth_id])
-  warden.raw_session[auth_id] = user.activate_session(warden)
+  warden.raw_session[auth_id] = user.activate_session(warden, options)
 end
 
 # After fetching a user from the session, we check that the session is marked
