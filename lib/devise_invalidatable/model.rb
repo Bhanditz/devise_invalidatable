@@ -11,7 +11,7 @@ module Devise
                  dependent: :destroy
       end
 
-      def activate_session(warden)
+      def activate_session(warden, options)
         new_session = user_sessions.new
         new_session.session_id = SecureRandom.hex(127)
         new_session.ip = warden.request.ip
