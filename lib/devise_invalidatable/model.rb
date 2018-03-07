@@ -14,7 +14,7 @@ module Devise
       def activate_session(warden, options)
         new_session = user_sessions.new
         new_session.session_id = SecureRandom.hex(127)
-        new_session.ip = warden.request.ip
+        new_session.ip = warden.request.remote_ip
         new_session.user_agent = warden.request.user_agent
         new_session.save
         purge_old_sessions
